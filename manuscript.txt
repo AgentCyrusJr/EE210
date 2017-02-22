@@ -1,0 +1,26 @@
+generalized input:
+
+1. Matrix
+2. row, col (each column is a feature vector)
+eg. R, G, B
+	r1,g1,b1
+	r2,g2,b2
+	r3,g3,b3
+	..,..,..
+	rn,gn,bn
+3. input size(n row) 
+
+Hn(d,c)     			2*512
+y           			512*1
+t           			256*1
+
+CNN.W       			CNN.input_size/CNN.P(i) * CNN.D(i) i=1		
+						CNN.Pp(c-1)/CNN.P(c) * CNN.D(c)    otherwise
+CNN.theta 				CNN.D(c) * 1
+CNN.partion_matrix 		? * CNN.input_size i=1		
+						? * CNN.Pp(c-1)    otherwise
+CNN.permutation_matrix 	CNN.P(c) * CNN.P(c)
+
+CNN.Wnn 				CNN.N_neuron(l) * (CNN.Pp(CNN.C)*CNN.D(CNN.C+1)) 	i=1
+						CNN.N_neuron(l) * CNN.N_neuron(l-1)					otherwise	
+CNN.thetann 			CNN.N_neuron(l) * 1
