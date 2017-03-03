@@ -7,7 +7,14 @@ function t = pooling_fun( y ,c, CNN, pooling_method)
 % Details: depending on c, a different pooling can be applied if needed.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % permutation
-y0 = CNN.permutation_matrix{c}*y;
+
+
+
+
+
+
+permutation_matrix = eye(CNN.P(c));
+y0 = permutation_matrix*y;
 
 % pooling
 helper_matrix = reshape(y0, length(y0)/CNN.Pp(c), CNN.Pp(c));
@@ -18,9 +25,12 @@ helper_matrix = reshape(y0, length(y0)/CNN.Pp(c), CNN.Pp(c));
 
 if ( strcmp(pooling_method, 'mean') )
     t = mean(helper_matrix, 1)';
-else if ( strcmp(pooling_method, 'max') )
+elseif ( strcmp(pooling_method, 'max') )
     t = max(helper_matrix)';
-    end
-end
+elseif ( strcmp(pooling_method, 'permutation') )
+    t = y0;
+elseif ( strcmp(pooling_method, 'inv_permutation') )
+    t = y0;
 end
 
+end

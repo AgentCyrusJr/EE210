@@ -32,6 +32,9 @@ CNN.P = P;
 % # of groups
 CNN.Pp = Pp;
 
+% @Yahya : # size of groups
+CNN.pooling_size = P./Pp;
+
 % # of neuron nodes, it is a vector
 CNN.N_neuron = N_neuron;
 
@@ -39,6 +42,9 @@ CNN.N_neuron = N_neuron;
 % W or theta we need to compute the output z.
 % Also, since the partition matrices and permutation matrices for each layer are
 % the same, the dimension of the cell is CNN.C*1
+% @Yahya : Since D contains D0, then shouldn't the W cell be of szize CNN.D-1 x CNN.C ?
+%Response:max(CNN.D) is the largest element in D, containintg D0 will
+%influence the length(CNN.D) but not the max value.
 CNN.W = cell(max(CNN.D), CNN.C);
 CNN.theta = cell(max(CNN.D), CNN.C);
 CNN.partition_matrix = cell(CNN.C, 1);
@@ -47,37 +53,32 @@ CNN.permutation_matrix = cell(CNN.C, 1);
 CNN.Wnn = cell(CNN.L-1,1);
 CNN.thetann = cell(CNN.L-1,1);
 
-for c = 1 : CNN.C+1
-    for d = 1 : CNN.D(c)
+for c = 1 : CNN.C
+    for d = 1 : CNN.D(c+1)
 % initialize the weights and bias
     if(c == 1)
-        CNN.W{d, c}  = ones(CNN.input_size/CNN.P(c), CNN.D(c));
+        CNN.W{d, c}  = 0.5*rand(CNN.input_size/CNN.P(c), CNN.D(c));
     else
-        CNN.W{d, c}  = ones(CNN.Pp(c-1)/CNN.P(c),CNN.D(c));
+        CNN.W{d, c}  = 0.5*rand(CNN.Pp(c-1)/CNN.P(c),CNN.D(c));
     end
-        CNN.theta{d, c}  = ones(CNN.D(c),1);
+        CNN.theta{d, c}  = 0.5*rand(CNN.D(c),1);
     end
+end
 % initalize the partition matrix and permutation matrix
 % partition matrices are not necessarily be square, however, the
 % permutation matrices must be square.
-    if (c ==1) 
-        CNN.partition_matrix{c} = eye(CNN.input_size);
-    else
-        CNN.partition_matrix{c} = eye(CNN.Pp(c-1));
-    end
-    CNN.permutation_matrix{c} = eye(CNN.P(c));
-end
+
 
 for l = 1:CNN.L-1
     if (l == 1)
-        CNN.Wnn{l} = ones(CNN.N_neuron(l),CNN.Pp(CNN.C)*CNN.D(CNN.C+1));
+        CNN.Wnn{l} = rand(CNN.N_neuron(l),CNN.Pp(CNN.C)*CNN.D(CNN.C+1));
     else 
-        CNN.Wnn{l} = ones(CNN.N_neuron(l), CNN.N_neuron(l-1));
+        CNN.Wnn{l} = rand(CNN.N_neuron(l), CNN.N_neuron(l-1));
     end
-    CNN.thetann{l} = ones(CNN.N_neuron(l),1);
+    CNN.thetann{l} = rand(CNN.N_neuron(l),1);
 end
 
-CNN.partition = @(h, c, CNN)partition_fun(h, c, CNN);
+CNN.partition = @(h, c, CNN_)partition_fun(h, c, CNN_);
 % The partition function takes two inputs, the feature vector h and the index of the correlation layer c.
 % Depending on c, the partition_fun should implement the partitioning corresponding to layer c.
 % Example how to call the function. TO do the permutation at the beginning of layer 2, we simply call CNN.partition(h,2)   where h is the featur input we want to partition.
@@ -90,8 +91,17 @@ CNN.activation_nn = @(z, l)activation_nn_fun(z, l);
 % The activation function, takes the vector z and the index of the neural network layer l.
 % Depending on l, we can apply a different activation function or keep the same by ignoring the value l.
 
-CNN.pooling = @(y, c, CNN, pooling_method)pooling_fun(y, c, CNN, pooling_method);
+CNN.pooling = @(y, c, CNN_, pooling_method)pooling_fun(y, c, CNN_, pooling_method);
 % The pooling function, takes the vector y and the index of the correlation layer c.
 % Depending on c, a different pooling can be applied if needed.
+
+
+CNN.activation_nn_deriv = @(z,l)activation_nn_deriv_fun(z,l);
+
+CNN.activation_corr_deriv = @(z,c)activation_corr_deriv_fun(z,c);
+
+
+CNN.pooling_deriv = @(CNN_,y,c,pooling_method)pooling_deriv_fun(CNN_,y,c,pooling_method);
+
 end
 
