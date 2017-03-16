@@ -1,0 +1,7 @@
+﻿In this project, we(Yahya Essa 704515916, Xiyuan Jiang 104759530, Cong Peng 904760493, Shashank Gowda 504617384) have distributed the whole project into three parts.
+
+Yahya Essa took care of the calculation of derivatives and debugging the algorithms both on feed forward and back propagation. Also, he proposed the new algorithm in calculating derivative, which was part I in the report. He also contributed to most of the comments and typos mentioned in the IV section.
+
+Xiyuan Jiang and Cong Peng are responsible for initializing the CNN structure, implementing feed forward algorithm. What’s more, they integrated all the code together and testing two classification tasks. They also commented on all the code and made it more readable and revised the report to the final version.
+
+Shashank Gowda implemented the gradient descent algorithm and tested the image classification case for the final. He also participated in revising the report.
